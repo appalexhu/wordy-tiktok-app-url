@@ -4,6 +4,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordy App</title>
+    <script>
+        const translations = {
+            'en': {
+                title: 'Search "Wordy" on the App Store',
+                download: 'Download App',
+                popup: 'On <span class="tiktok-icon"></span> you need to tap on the <span class="three-dots"></span> and then tap on <span class="highlight">"Open in browser"</span> to download the app for free.'
+            },
+            'ar': {
+                title: 'ابحث عن "Wordy" في App Store',
+                download: 'تحميل التطبيق',
+                popup: 'في <span class="tiktok-icon"></span> تحتاج إلى النقر على <span class="three-dots"></span> ثم النقر على <span class="highlight">"فتح في المتصفح"</span> لتحميل التطبيق مجانًا.'
+            },
+            'ca': {
+                title: 'Cerca "Wordy" a l\'App Store',
+                download: 'Descarregar App',
+                popup: 'A <span class="tiktok-icon"></span> has de tocar <span class="three-dots"></span> i després tocar <span class="highlight">"Obrir al navegador"</span> per descarregar l\'aplicació gratuïtament.'
+            },
+            'zh_cn': {
+                title: '在App Store搜索"Wordy"',
+                download: '下载应用',
+                popup: '在<span class="tiktok-icon"></span>上，您需要点击<span class="three-dots"></span>然后点击<span class="highlight">"在浏览器中打开"</span>来免费下载应用。'
+            },
+            'zh_tw': {
+                title: '在App Store搜尋"Wordy"',
+                download: '下載應用程式',
+                popup: '在<span class="tiktok-icon"></span>上，您需要點擊<span class="three-dots"></span>然後點擊<span class="highlight">"在瀏覽器中開啟"</span>來免費下載應用程式。'
+            },
+            'hr': {
+                title: 'Pretražite "Wordy" u App Store',
+                download: 'Preuzmi aplikaciju',
+                popup: 'Na <span class="tiktok-icon"></span> trebate dodirnuti <span class="three-dots"></span> i zatim dodirnuti <span class="highlight">"Otvori u pregledniku"</span> za besplatno preuzimanje aplikacije.'
+            },
+            'cs': {
+                title: 'Hledejte "Wordy" v App Store',
+                download: 'Stáhnout aplikaci',
+                popup: 'Na <span class="tiktok-icon"></span> musíte klepnout na <span class="three-dots"></span> a pak klepnout na <span class="highlight">"Otevřít v prohlížeči"</span> pro bezplatné stažení aplikace.'
+            },
+            'da': {
+                title: 'Søg efter "Wordy" i App Store',
+                download: 'Download App',
+                popup: 'På <span class="tiktok-icon"></span> skal du trykke på <span class="three-dots"></span> og derefter trykke på <span class="highlight">"Åbn i browser"</span> for at downloade appen gratis.'
+            },
+            'nl': {
+                title: 'Zoek "Wordy" in de App Store',
+                download: 'Download App',
+                popup: 'Op <span class="tiktok-icon"></span> moet je tikken op <span class="three-dots"></span> en dan tikken op <span class="highlight">"Openen in browser"</span> om de app gratis te downloaden.'
+            },
+            'fi': {
+                title: 'Hae "Wordy" App Storesta',
+                download: 'Lataa sovellus',
+                popup: '<span class="tiktok-icon"></span>:ssa sinun täytyy napauttaa <span class="three-dots"></span> ja sitten napauttaa <span class="highlight">"Avaa selaimessa"</span> ladataksesi sovelluksen ilmaiseksi.'
+            },
+            'fr': {
+                title: 'Recherchez "Wordy" sur l\'App Store',
+                download: 'Télécharger l\'app',
+                popup: 'Sur <span class="tiktok-icon"></span> vous devez appuyer sur <span class="three-dots"></span> puis appuyer sur <span class="highlight">"Ouvrir dans le navigateur"</span> pour télécharger l\'application gratuitement.'
+            },
+            'de': {
+                title: 'Suche "Wordy" im App Store',
+                download: 'App herunterladen',
+                popup: 'Auf <span class="tiktok-icon"></span> müssen Sie auf <span class="three-dots"></span> tippen und dann auf <span class="highlight">"Im Browser öffnen"</span> tippen, um die App kostenlos herunterzuladen.'
+            },
+            'el': {
+                title: 'Αναζητήστε "Wordy" στο App Store',
+                download: 'Λήψη εφαρμογής',
+                popup: 'Στο <span class="tiktok-icon"></span> πρέπει να πατήσετε <span class="three-dots"></span> και μετά να πατήσετε <span class="highlight">"Άνοιγμα στον browser"</span> για να κατεβάσετε την εφαρμογή δωρεάν.'
+            },
+            'he': {
+                title: 'חפש "Wordy" ב-App Store',
+                download: 'הורד אפליקציה',
+                popup: 'ב-<span class="tiktok-icon"></span> עליך להקיש על <span class="three-dots"></span> ואז להקיש על <span class="highlight">"פתח בדפדפן"</span> כדי להוריד את האפליקציה בחינם.'
+            },
+            'hi': {
+                title: 'App Store में "Wordy" खोजें',
+                download: 'ऐप डाउनलोड करें',
+                popup: '<span class="tiktok-icon"></span> पर आपको <span class="three-dots"></span> पर टैप करना होगा और फिर मुफ्त में ऐप डाउनलोड करने के लिए <span class="highlight">"ब्राउज़र में खोलें"</span> पर टैप करना होगा।'
+            },
+            'hu': {
+                title: 'Keresd a "Wordy"-t az App Store-ban',
+                download: 'Alkalmazás letöltése',
+                popup: 'A <span class="tiktok-icon"></span>-on rá kell koppintanod a <span class="three-dots"></span> gombra, majd a <span class="highlight">"Megnyitás böngészőben"</span> opcióra az alkalmazás ingyenes letöltéséhez.'
+            },
+            'id': {
+                title: 'Cari "Wordy" di App Store',
+                download: 'Unduh Aplikasi',
+                popup: 'Di <span class="tiktok-icon"></span> Anda perlu mengetuk <span class="three-dots"></span> lalu ketuk <span class="highlight">"Buka di browser"</span> untuk mengunduh aplikasi secara gratis.'
+            },
+            'it': {
+                title: 'Cerca "Wordy" nell\'App Store',
+                download: 'Scarica l\'app',
+                popup: 'Su <span class="tiktok-icon"></span> devi toccare <span class="three-dots"></span> e poi toccare <span class="highlight">"Apri nel browser"</span> per scaricare l\'app gratuitamente.'
+            },
+            'ja': {
+                title: 'App Storeで「Wordy」を検索',
+                download: 'アプリをダウンロード',
+                popup: '<span class="tiktok-icon"></span>では<span class="three-dots"></span>をタップしてから<span class="highlight">「ブラウザで開く」</span>をタップして、アプリを無料でダウンロードしてください。'
+            },
+            'ko': {
+                title: 'App Store에서 "Wordy" 검색',
+                download: '앱 다운로드',
+                popup: '<span class="tiktok-icon"></span>에서 <span class="three-dots"></span>를 탭한 다음 <span class="highlight">"브라우저에서 열기"</span>를 탭하여 앱을 무료로 다운로드하세요.'
+            },
+            'ms': {
+                title: 'Cari "Wordy" di App Store',
+                download: 'Muat turun Aplikasi',
+                popup: 'Di <span class="tiktok-icon"></span> anda perlu ketik <span class="three-dots"></span> dan kemudian ketik <span class="highlight">"Buka dalam pelayar"</span> untuk memuat turun aplikasi secara percuma.'
+            },
+            'no': {
+                title: 'Søk etter "Wordy" i App Store',
+                download: 'Last ned app',
+                popup: 'På <span class="tiktok-icon"></span> må du trykke på <span class="three-dots"></span> og deretter trykke på <span class="highlight">"Åpne i nettleser"</span> for å laste ned appen gratis.'
+            },
+            'pl': {
+                title: 'Szukaj "Wordy" w App Store',
+                download: 'Pobierz aplikację',
+                popup: 'Na <span class="tiktok-icon"></span> musisz dotknąć <span class="three-dots"></span> a następnie dotknąć <span class="highlight">"Otwórz w przeglądarce"</span> aby pobrać aplikację za darmo.'
+            },
+            'pt': {
+                title: 'Procure "Wordy" na App Store',
+                download: 'Baixar aplicativo',
+                popup: 'No <span class="tiktok-icon"></span> você precisa tocar em <span class="three-dots"></span> e depois tocar em <span class="highlight">"Abrir no navegador"</span> para baixar o aplicativo gratuitamente.'
+            },
+            'ro': {
+                title: 'Căutați "Wordy" în App Store',
+                download: 'Descărcați aplicația',
+                popup: 'Pe <span class="tiktok-icon"></span> trebuie să atingeți <span class="three-dots"></span> și apoi să atingeți <span class="highlight">"Deschide în browser"</span> pentru a descărca aplicația gratuit.'
+            },
+            'ru': {
+                title: 'Найдите "Wordy" в App Store',
+                download: 'Скачать приложение',
+                popup: 'В <span class="tiktok-icon"></span> вам нужно нажать на <span class="three-dots"></span> а затем нажать <span class="highlight">"Открыть в браузере"</span> чтобы скачать приложение бесплатно.'
+            },
+            'sk': {
+                title: 'Hľadajte "Wordy" v App Store',
+                download: 'Stiahnuť aplikáciu',
+                popup: 'Na <span class="tiktok-icon"></span> musíte ťuknúť na <span class="three-dots"></span> a potom ťuknúť na <span class="highlight">"Otvoriť v prehliadači"</span> na bezplatné stiahnutie aplikácie.'
+            },
+            'es': {
+                title: 'Busca "Wordy" en la App Store',
+                download: 'Descargar App',
+                popup: 'En <span class="tiktok-icon"></span> debes tocar <span class="three-dots"></span> y luego tocar <span class="highlight">"Abrir en el navegador"</span> para descargar la aplicación gratis.'
+            },
+            'sv': {
+                title: 'Sök efter "Wordy" i App Store',
+                download: 'Ladda ner app',
+                popup: 'På <span class="tiktok-icon"></span> måste du trycka på <span class="three-dots"></span> och sedan trycka på <span class="highlight">"Öppna i webbläsare"</span> för att ladda ner appen gratis.'
+            },
+            'th': {
+                title: 'ค้นหา "Wordy" ใน App Store',
+                download: 'ดาวน์โหลดแอป',
+                popup: 'บน <span class="tiktok-icon"></span> คุณต้องแตะ <span class="three-dots"></span> แล้วแตะ <span class="highlight">"เปิดในเบราว์เซอร์"</span> เพื่อดาวน์โหลดแอปฟรี'
+            },
+            'tr': {
+                title: 'App Store\'da "Wordy" arayın',
+                download: 'Uygulamayı İndir',
+                popup: '<span class="tiktok-icon"></span>\'da <span class="three-dots"></span> simgesine dokunmanız ve ardından uygulamayı ücretsiz indirmek için <span class="highlight">"Tarayıcıda aç"</span> seçeneğine dokunmanız gerekir.'
+            },
+            'uk': {
+                title: 'Шукайте "Wordy" в App Store',
+                download: 'Завантажити додаток',
+                popup: 'У <span class="tiktok-icon"></span> вам потрібно натиснути на <span class="three-dots"></span> а потім натиснути <span class="highlight">"Відкрити в браузері"</span> щоб завантажити додаток безкоштовно.'
+            },
+            'vi': {
+                title: 'Tìm "Wordy" trên App Store',
+                download: 'Tải ứng dụng',
+                popup: 'Trên <span class="tiktok-icon"></span> bạn cần nhấn vào <span class="three-dots"></span> và sau đó nhấn vào <span class="highlight">"Mở trong trình duyệt"</span> để tải ứng dụng miễn phí.'
+            }
+        };
+
+        function detectUserLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.toLowerCase().split('-')[0];
+            
+            if (langCode === 'zh') {
+                const fullLang = browserLang.toLowerCase();
+                if (fullLang.includes('tw') || fullLang.includes('hk') || fullLang.includes('mo')) {
+                    return 'zh_tw';
+                }
+                return 'zh_cn';
+            }
+            
+            return translations[langCode] ? langCode : 'en';
+        }
+
+        function updatePageLanguage() {
+            const lang = detectUserLanguage();
+            const trans = translations[lang];
+            
+            document.querySelector('.title').textContent = trans.title;
+            document.querySelector('.download-button').textContent = trans.download;
+            document.querySelector('.popup').innerHTML = trans.popup;
+            
+            if (lang === 'ar' || lang === 'he') {
+                document.body.style.direction = 'rtl';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', updatePageLanguage);
+    </script>
     <style>
         * {
             margin: 0;
