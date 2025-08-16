@@ -5,6 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordy App</title>
     <script>
+        // AppsFlyer tracking WITHOUT OneLink redirect
+        const APP_STORE_URL = 'https://apps.apple.com/us/app/learn-languages-wordy/id6670703228';
+        let finalURL = APP_STORE_URL;
+        
+        // Initialize tracking
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pid = urlParams.get('pid') || 'Social_tiktok';
+            const c = urlParams.get('c') || 'tiktok_profile';
+            const af_channel = urlParams.get('af_channel') || 'tiktok';
+            
+            // Send impression tracking to AppsFlyer (no redirect, just tracking)
+            const appsFlyerAppId = 'id6670703228';
+            const impressionURL = `https://impression.appsflyer.com/${appsFlyerAppId}`;
+            const impressionParams = {
+                pid: pid,
+                c: c,
+                af_channel: af_channel,
+                af_ad: urlParams.get('af_ad') || 'bio_link',
+                af_adset: urlParams.get('af_adset') || 'organic',
+                af_siteid: window.location.hostname,
+                af_sub1: urlParams.get('af_sub1') || '',
+                af_sub2: urlParams.get('af_sub2') || '',
+                clickid: Date.now().toString(),
+                af_viewthrough_lookback: '1d'
+            };
+            
+            // Remove empty parameters
+            Object.keys(impressionParams).forEach(key => {
+                if (!impressionParams[key]) delete impressionParams[key];
+            });
+            
+            // Create invisible image to trigger impression
+            const img = new Image(1, 1);
+            img.src = impressionURL + '?' + new URLSearchParams(impressionParams).toString();
+            img.style.display = 'none';
+            if (document.body) {
+                document.body.appendChild(img);
+            } else {
+                window.addEventListener('DOMContentLoaded', function() {
+                    document.body.appendChild(img);
+                });
+            }
+            
+            // Also send a click tracking pixel when user clicks/redirects
+            window.trackClick = function() {
+                const clickURL = `https://impression.appsflyer.com/${appsFlyerAppId}/click`;
+                const clickImg = new Image(1, 1);
+                clickImg.src = clickURL + '?' + new URLSearchParams(impressionParams).toString();
+            };
+            
+            // Log for debugging (remove in production)
+            console.log('Direct App Store URL:', finalURL);
+            console.log('AppsFlyer impression sent:', impressionParams);
+        })();
+        
         const translations = {
             'en': {
                 title: 'Search "Wordy" on the App Store',
@@ -201,7 +257,27 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', updatePageLanguage);
+        // Track manual download button click
+        function trackDownloadClick() {
+            // Send click tracking
+            if (window.trackClick) {
+                window.trackClick();
+            }
+            // Small delay to ensure tracking fires
+            setTimeout(function() {
+                window.location.href = finalURL;
+            }, 50);
+            return false;
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            updatePageLanguage();
+            // Update download button href
+            const downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) {
+                downloadBtn.href = finalURL;
+            }
+        });
     </script>
     <style>
         * {
@@ -339,7 +415,11 @@
         // Automatic redirect to App Store after page loads
         window.addEventListener('load', function() {
             setTimeout(function() {
-                window.location.href = 'https://apps.apple.com/us/app/learn-languages-wordy/id6670703228';
+                // Send click tracking before redirect
+                if (window.trackClick) {
+                    window.trackClick();
+                }
+                window.location.href = finalURL;
             }, 1000); // 1 second delay to show the page briefly
         });
     </script>
@@ -349,7 +429,7 @@
     <div class="container">
         <div class="app-icon"></div>
         <div class="title">Search "Wordy" on the App Store</div>
-        <a href="https://apps.apple.com/us/app/learn-languages-wordy/id6670703228" class="download-button">Download App</a>
+        <a href="https://apps.apple.com/us/app/learn-languages-wordy/id6670703228" class="download-button" id="download-btn" onclick="trackDownloadClick()">Download App</a>
     </div>
 
     <div class="popup">
