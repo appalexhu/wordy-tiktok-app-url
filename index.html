@@ -20,23 +20,51 @@
         const IS_ANDROID = isAndroid();
         const IS_IOS = isIOS();
         
-        // Direct store URLs
-        const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.appalex.learnlanguages';
-        const APP_STORE_URL = 'https://apps.apple.com/us/app/learn-languages-wordy/id6670703228';
+        // Campaign-based OneLink routing
+        const ONELINK_CAMPAIGNS = {
+            'wordyapp': 'https://go.appalex.hu/0206/wordyapp',
+            'wordymagyar': 'https://go.appalex.hu/0206/wordymagyar',
+            'gaby': 'https://go.appalex.hu/0206/gaby',
+            // Add more campaigns here as needed
+            'default': 'https://go.appalex.hu/0206/wordyapp' // Default OneLink
+        };
         
-        // Set final URL based on platform
         let finalURL = '';
         
-        if (IS_ANDROID) {
-            finalURL = GOOGLE_PLAY_URL;
-        } else {
-            // Default to iOS for desktop and other devices
-            finalURL = APP_STORE_URL;
-        }
-        
-        // Log for debugging (remove in production)
-        console.log('Platform:', IS_ANDROID ? 'Android' : (IS_IOS ? 'iOS' : 'Other'));
-        console.log('Store URL:', finalURL);
+        // Initialize routing based on campaign
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const campaign = urlParams.get('campaign') || urlParams.get('c') || 'default';
+            
+            // Select OneLink based on campaign
+            finalURL = ONELINK_CAMPAIGNS[campaign.toLowerCase()] || ONELINK_CAMPAIGNS['default'];
+            
+            // Add any additional parameters to pass through to OneLink
+            const passThroughParams = {};
+            
+            // Common AppsFlyer parameters to pass through
+            const allowedParams = ['pid', 'af_channel', 'af_ad', 'af_adset', 'af_sub1', 'af_sub2', 'af_sub3', 'af_sub4', 'af_sub5'];
+            
+            for (let [key, value] of urlParams) {
+                if (allowedParams.includes(key) || key.startsWith('af_')) {
+                    passThroughParams[key] = value;
+                }
+            }
+            
+            // Add default pid if not provided
+            if (!passThroughParams.pid) {
+                passThroughParams.pid = 'tiktok_bio';
+            }
+            
+            // Build final URL with parameters if any exist
+            if (Object.keys(passThroughParams).length > 0) {
+                finalURL = finalURL + '?' + new URLSearchParams(passThroughParams).toString();
+            }
+            
+            // Log for debugging (remove in production)
+            console.log('Campaign:', campaign);
+            console.log('OneLink URL:', finalURL);
+        })();
         
         const translations = {
             'en': {
