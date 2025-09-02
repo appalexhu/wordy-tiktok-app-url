@@ -31,39 +31,44 @@
         
         let finalURL = '';
         
-        // Initialize routing based on campaign
+        // Initialize routing based on platform and campaign
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const campaign = urlParams.get('campaign') || urlParams.get('c') || 'default';
             
-            // Select OneLink based on campaign
-            finalURL = ONELINK_CAMPAIGNS[campaign.toLowerCase()] || ONELINK_CAMPAIGNS['default'];
-            
-            // Add any additional parameters to pass through to OneLink
-            const passThroughParams = {};
-            
-            // Common AppsFlyer parameters to pass through
-            const allowedParams = ['pid', 'af_channel', 'af_ad', 'af_adset', 'af_sub1', 'af_sub2', 'af_sub3', 'af_sub4', 'af_sub5'];
-            
-            for (let [key, value] of urlParams) {
-                if (allowedParams.includes(key) || key.startsWith('af_')) {
-                    passThroughParams[key] = value;
+            if (IS_IOS) {
+                // iOS: Direct App Store link to avoid TikTok blocking
+                finalURL = 'https://apps.apple.com/us/app/learn-languages-wordy/id6670703228';
+                console.log('iOS detected: Using direct App Store link');
+            } else {
+                // Android and others: Use OneLink for tracking
+                finalURL = ONELINK_CAMPAIGNS[campaign.toLowerCase()] || ONELINK_CAMPAIGNS['default'];
+                
+                // Add any additional parameters to pass through to OneLink
+                const passThroughParams = {};
+                
+                // Common AppsFlyer parameters to pass through
+                const allowedParams = ['pid', 'af_channel', 'af_ad', 'af_adset', 'af_sub1', 'af_sub2', 'af_sub3', 'af_sub4', 'af_sub5'];
+                
+                for (let [key, value] of urlParams) {
+                    if (allowedParams.includes(key) || key.startsWith('af_')) {
+                        passThroughParams[key] = value;
+                    }
                 }
+                
+                // Add default pid if not provided
+                if (!passThroughParams.pid) {
+                    passThroughParams.pid = 'tiktok_bio';
+                }
+                
+                // Build final URL with parameters if any exist
+                if (Object.keys(passThroughParams).length > 0) {
+                    finalURL = finalURL + '?' + new URLSearchParams(passThroughParams).toString();
+                }
+                
+                console.log('Campaign:', campaign);
+                console.log('OneLink URL:', finalURL);
             }
-            
-            // Add default pid if not provided
-            if (!passThroughParams.pid) {
-                passThroughParams.pid = 'tiktok_bio';
-            }
-            
-            // Build final URL with parameters if any exist
-            if (Object.keys(passThroughParams).length > 0) {
-                finalURL = finalURL + '?' + new URLSearchParams(passThroughParams).toString();
-            }
-            
-            // Log for debugging (remove in production)
-            console.log('Campaign:', campaign);
-            console.log('OneLink URL:', finalURL);
         })();
         
         const translations = {
