@@ -62,13 +62,14 @@
         console.log('IS_ANDROID:', IS_ANDROID);
         console.log('IS_IOS:', IS_IOS);
         
-        // Campaign-based OneLink routing
+        // Campaign-based OneLink routing (matching AppsFlyer setup)
         const ONELINK_CAMPAIGNS = {
-            'wordyapp': 'https://go.appalex.hu/0206/wordyapp',
+            'wordyapp': 'https://go.appalex.hu/0206/wordyapp', // Updated OneLink
             'wordymagyar': 'https://go.appalex.hu/0206/wordymagyar',
             'gaby': 'https://go.appalex.hu/0206/gaby',
+            'language_learning_wordy': 'https://appwordy.onelink.me/0206/ddjw4q3v',
             // Add more campaigns here as needed
-            'default': 'https://go.appalex.hu/0206/wordyapp' // Default OneLink
+            'default': 'https://appwordy.onelink.me/0206/mcl0uuft' // Default to wordyapp OneLink
         };
         
         let finalURL = '';
@@ -83,6 +84,63 @@
                 finalURL = 'https://apps.apple.com/us/app/learn-languages-wordy/id6670703228';
                 console.log('Platform:', 'iOS (TikTok safe mode)');
                 console.log('iOS detected: Using direct App Store link');
+                
+                // Send tracking data to AppsFlyer S2S API
+                // Map campaigns to their media sources
+                const campaignMediaSources = {
+                    'wordyapp': 'Social_tiktok',
+                    'wordymagyar': 'Social_tiktok', 
+                    'gaby': 'Social_tiktok',
+                    'language_learning_wordy': 'Social_instagram'
+                };
+                
+                const mediaSource = campaignMediaSources[campaign.toLowerCase()] || urlParams.get('pid') || 'Social_tiktok';
+                
+                const trackingData = {
+                    app_id: 'id6670703228',
+                    media_source: mediaSource,
+                    campaign: campaign,
+                    af_channel: urlParams.get('af_channel') || 'social',
+                    af_ad: urlParams.get('af_ad') || 'bio_link',
+                    af_siteid: window.location.hostname,
+                    click_time: new Date().toISOString(),
+                    user_agent: navigator.userAgent,
+                    ip: 'auto' // AppsFlyer will detect from request
+                };
+                
+                // Option 1: AppsFlyer Click API (no auth needed)
+                const clickUrl = `https://impression.appsflyer.com/${trackingData.app_id}/click`;
+                const clickParams = new URLSearchParams({
+                    pid: trackingData.media_source,
+                    c: trackingData.campaign,
+                    af_channel: trackingData.af_channel,
+                    af_ad: trackingData.af_ad,
+                    af_siteid: trackingData.af_siteid,
+                    clickid: Date.now().toString()
+                });
+                
+                // Send click event via invisible pixel
+                const img = new Image(1, 1);
+                img.src = clickUrl + '?' + clickParams.toString();
+                img.style.display = 'none';
+                document.body.appendChild(img);
+                
+                // Option 2: Store campaign data in URL parameters for App Store
+                // Apple's App Store Analytics campaign tracking
+                const storeParams = new URLSearchParams({
+                    ct: campaign, // Campaign token
+                    mt: '8' // Media type (8 = Web)
+                });
+                
+                // Only add pt if you have Apple Provider Token
+                // pt: 'YOUR_TEAM_ID', // Uncomment and add your Team ID if you have it
+                
+                // Add campaign parameters to App Store URL
+                if (campaign !== 'default') {
+                    finalURL = finalURL + '&' + storeParams.toString();
+                }
+                
+                console.log('AppsFlyer tracking sent for iOS:', trackingData);
             } else {
                 // Android and others: Use OneLink for tracking
                 finalURL = ONELINK_CAMPAIGNS[campaign.toLowerCase()] || ONELINK_CAMPAIGNS['default'];
