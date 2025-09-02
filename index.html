@@ -15,24 +15,26 @@
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
             
             // Check for iOS devices (including TikTok in-app browser)
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            if (/iPhone|iPad|iPod/.test(userAgent) && !window.MSStream) {
+                console.log('iOS detected via iPhone/iPad/iPod in UA');
                 return true;
             }
             
-            // Check for ByteLocale (TikTok iOS specific)
-            if (/ByteLocale/i.test(userAgent)) {
-                console.log('ByteLocale detected - TikTok iOS');
+            // Check for BytedanceWebview + iPhone OS (TikTok iOS specific pattern)
+            if (/BytedanceWebview/i.test(userAgent) && /iPhone OS/i.test(userAgent)) {
+                console.log('TikTok iOS detected (BytedanceWebview + iPhone OS)');
                 return true;
             }
             
-            // Check for BytedanceWebview (TikTok's webview) - iOS version
-            if (/BytedanceWebview/i.test(userAgent) && /iPhone|iPad|iPod/.test(userAgent)) {
-                console.log('BytedanceWebview on iOS device');
+            // Check for musical_ly (TikTok's old name) + iPhone OS
+            if (/musical_ly/i.test(userAgent) && /iPhone OS/i.test(userAgent)) {
+                console.log('TikTok iOS detected (musical_ly + iPhone OS)');
                 return true;
             }
             
-            // Check for WKWebView (iOS WebView)
-            if (/WKWebView/.test(userAgent) && !/Android/.test(userAgent)) {
+            // Check for BytedanceWebview without Android = likely iOS
+            if (/BytedanceWebview/i.test(userAgent) && !/Android/i.test(userAgent)) {
+                console.log('BytedanceWebview detected, not Android - assuming iOS');
                 return true;
             }
             
