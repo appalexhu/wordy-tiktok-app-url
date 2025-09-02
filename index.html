@@ -13,36 +13,52 @@
         
         function isIOS() {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
             // Check for iOS devices (including TikTok in-app browser)
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
                 return true;
             }
-            // Check for TikTok in-app browser on iOS
-            if (/TikTok/.test(userAgent) && !/Android/.test(userAgent)) {
+            
+            // Check for ByteLocale (TikTok iOS specific)
+            if (/ByteLocale/i.test(userAgent)) {
+                console.log('ByteLocale detected - TikTok iOS');
                 return true;
             }
-            // Check for BytedanceWebview (TikTok's webview)
-            if (/BytedanceWebview/.test(userAgent) && !/Android/.test(userAgent)) {
+            
+            // Check for BytedanceWebview (TikTok's webview) - iOS version
+            if (/BytedanceWebview/i.test(userAgent) && /iPhone|iPad|iPod/.test(userAgent)) {
+                console.log('BytedanceWebview on iOS device');
                 return true;
             }
+            
+            // Check for WKWebView (iOS WebView)
+            if (/WKWebView/.test(userAgent) && !/Android/.test(userAgent)) {
+                return true;
+            }
+            
             // Check for iPad on iOS 13+ (reports as Mac)
             if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
                 return true;
             }
-            // Additional iOS Safari check
-            if (/Safari/.test(userAgent) && /Apple/.test(navigator.vendor) && !/Chrome/.test(userAgent) && !/Android/.test(userAgent)) {
-                return true;
-            }
+            
             // Check iOS via platform
             if (navigator.platform && /iPhone|iPod|iPad/.test(navigator.platform)) {
                 return true;
             }
+            
             return false;
         }
         
         // Store detection globally
         const IS_ANDROID = isAndroid();
         const IS_IOS = isIOS();
+        
+        // Debug info
+        console.log('User Agent:', navigator.userAgent);
+        console.log('Platform:', navigator.platform);
+        console.log('Vendor:', navigator.vendor);
+        console.log('IS_ANDROID:', IS_ANDROID);
+        console.log('IS_IOS:', IS_IOS);
         
         // Campaign-based OneLink routing
         const ONELINK_CAMPAIGNS = {
