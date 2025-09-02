@@ -13,7 +13,31 @@
         
         function isIOS() {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            return /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+            // Check for iOS devices (including TikTok in-app browser)
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return true;
+            }
+            // Check for TikTok in-app browser on iOS
+            if (/TikTok/.test(userAgent) && !/Android/.test(userAgent)) {
+                return true;
+            }
+            // Check for BytedanceWebview (TikTok's webview)
+            if (/BytedanceWebview/.test(userAgent) && !/Android/.test(userAgent)) {
+                return true;
+            }
+            // Check for iPad on iOS 13+ (reports as Mac)
+            if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
+                return true;
+            }
+            // Additional iOS Safari check
+            if (/Safari/.test(userAgent) && /Apple/.test(navigator.vendor) && !/Chrome/.test(userAgent) && !/Android/.test(userAgent)) {
+                return true;
+            }
+            // Check iOS via platform
+            if (navigator.platform && /iPhone|iPod|iPad/.test(navigator.platform)) {
+                return true;
+            }
+            return false;
         }
         
         // Store detection globally
@@ -39,6 +63,7 @@
             if (IS_IOS) {
                 // iOS: Direct App Store link to avoid TikTok blocking
                 finalURL = 'https://apps.apple.com/us/app/learn-languages-wordy/id6670703228';
+                console.log('Platform:', 'iOS (TikTok safe mode)');
                 console.log('iOS detected: Using direct App Store link');
             } else {
                 // Android and others: Use OneLink for tracking
@@ -66,6 +91,7 @@
                     finalURL = finalURL + '?' + new URLSearchParams(passThroughParams).toString();
                 }
                 
+                console.log('Platform:', 'Android/Desktop');
                 console.log('Campaign:', campaign);
                 console.log('OneLink URL:', finalURL);
             }
