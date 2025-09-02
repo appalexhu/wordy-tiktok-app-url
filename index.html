@@ -69,7 +69,7 @@
             'gaby': 'https://go.appalex.hu/0206/gaby',
             'language_learning_wordy': 'https://appwordy.onelink.me/0206/ddjw4q3v',
             // Add more campaigns here as needed
-            'default': 'https://appwordy.onelink.me/0206/mcl0uuft' // Default to wordyapp OneLink
+            'default': 'https://go.appalex.hu/0206/default' // Default to wordyapp OneLink
         };
         
         let finalURL = '';
@@ -86,12 +86,10 @@
                 console.log('iOS detected: Using direct App Store link');
                 
                 // Send tracking data to AppsFlyer S2S API
-                // Map campaigns to their media sources
+                // Map specific campaigns to their media sources, default to Social_tiktok for unknown campaigns
                 const campaignMediaSources = {
-                    'wordyapp': 'Social_tiktok',
-                    'wordymagyar': 'Social_tiktok', 
-                    'gaby': 'Social_tiktok',
                     'language_learning_wordy': 'Social_instagram'
+                    // All other campaigns default to Social_tiktok
                 };
                 
                 const mediaSource = campaignMediaSources[campaign.toLowerCase()] || urlParams.get('pid') || 'Social_tiktok';
@@ -143,10 +141,19 @@
                 console.log('AppsFlyer tracking sent for iOS:', trackingData);
             } else {
                 // Android and others: Use OneLink for tracking
-                finalURL = ONELINK_CAMPAIGNS[campaign.toLowerCase()] || ONELINK_CAMPAIGNS['default'];
+                // Check if campaign exists in predefined list, otherwise use default with campaign parameter
+                if (ONELINK_CAMPAIGNS[campaign.toLowerCase()]) {
+                    finalURL = ONELINK_CAMPAIGNS[campaign.toLowerCase()];
+                } else {
+                    // Use default OneLink but pass the campaign as parameter
+                    finalURL = ONELINK_CAMPAIGNS['default'];
+                }
                 
                 // Add any additional parameters to pass through to OneLink
                 const passThroughParams = {};
+                
+                // Always include the campaign name
+                passThroughParams.c = campaign;
                 
                 // Common AppsFlyer parameters to pass through
                 const allowedParams = ['pid', 'af_channel', 'af_ad', 'af_adset', 'af_sub1', 'af_sub2', 'af_sub3', 'af_sub4', 'af_sub5'];
@@ -162,10 +169,8 @@
                     passThroughParams.pid = 'tiktok_bio';
                 }
                 
-                // Build final URL with parameters if any exist
-                if (Object.keys(passThroughParams).length > 0) {
-                    finalURL = finalURL + '?' + new URLSearchParams(passThroughParams).toString();
-                }
+                // Build final URL with parameters
+                finalURL = finalURL + '?' + new URLSearchParams(passThroughParams).toString();
                 
                 console.log('Platform:', 'Android/Desktop');
                 console.log('Campaign:', campaign);
